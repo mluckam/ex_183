@@ -15,6 +15,7 @@
 
     <modules>
         <module>deps-jboss</module>
+        <module>deps-validator</module>
         <module>library</module>
         <module>parent</module>
     </modules>
