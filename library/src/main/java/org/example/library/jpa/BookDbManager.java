@@ -5,19 +5,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.example.library.cdi.BookEntityManager;
 import org.example.library.jpa.model.Book;
 import org.example.library.jpa.model.BookField;
 
 @Singleton
 public class BookDbManager {
 
-    @PersistenceContext
     private EntityManager entityManager;
+
+    public BookDbManager() {
+    }
+
+    @Inject
+    public BookDbManager(@BookEntityManager EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     public void addBook(Book book) {
         entityManager.merge(book.getAuthorBean());

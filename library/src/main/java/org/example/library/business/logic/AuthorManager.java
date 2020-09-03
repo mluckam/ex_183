@@ -3,12 +3,15 @@ package org.example.library.business.logic;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.validation.constraints.NotEmpty;
 
 import org.example.library.jpa.AuthorDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
 
+@ApplicationScoped
 public class AuthorManager {
 
     private AuthorDbManager authorDbManager;
@@ -17,7 +20,8 @@ public class AuthorManager {
     }
 
 
-    AuthorManager(AuthorDbManager authorDbManager) {
+    @Inject
+    public AuthorManager(AuthorDbManager authorDbManager) {
         this.authorDbManager = authorDbManager;
     }
 

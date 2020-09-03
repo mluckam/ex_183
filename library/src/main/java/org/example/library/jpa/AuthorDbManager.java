@@ -1,18 +1,26 @@
 package org.example.library.jpa;
 
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.example.library.cdi.AuthorEntityManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.AuthorField;
 
 @Singleton
 public class AuthorDbManager {
 
-    @PersistenceContext
     private EntityManager entityManager;
+
+    public AuthorDbManager() {
+    }
+
+    @Inject
+    public AuthorDbManager(@AuthorEntityManager EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     public void createAuthor(String firstName, String lastName) {
         Author author = new Author(firstName, lastName);

@@ -2,6 +2,8 @@ package org.example.library.business.logic;
 
 import java.util.Set;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
@@ -9,6 +11,7 @@ import org.example.library.jpa.BookDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
 
+@ApplicationScoped
 public class BookManager {
 
     private BookDbManager bookDbManager;
@@ -17,7 +20,8 @@ public class BookManager {
     public BookManager() {
     }
 
-    BookManager(BookDbManager bookDbManager, AuthorManager authorManager) {
+    @Inject
+    public BookManager(BookDbManager bookDbManager, AuthorManager authorManager) {
         this.bookDbManager = bookDbManager;
         this.authorManager = authorManager;
     }
