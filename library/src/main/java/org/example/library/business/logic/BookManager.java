@@ -10,9 +10,12 @@ import javax.validation.constraints.Positive;
 import org.example.library.jpa.BookDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class BookManager {
+
+    private static final Logger LOGGER = Logger.getLogger(BookManager.class);
 
     private BookDbManager bookDbManager;
     private AuthorManager authorManager;
@@ -26,24 +29,33 @@ public class BookManager {
         this.authorManager = authorManager;
     }
 
-    public boolean addBook(Book book) {
-        if(bookDbManager.bookExists(book)) {
-            //add log statement
-            return false;
+    public BookStatus addBook(Book book) {
+        try {
+            if (bookDbManager.bookExists(book)) {
+                LOGGER.infof("book '%s' was added to catalog, but it already exists.", book);
+                return BookStatus.ALREADY_ADDED;
+            }
+            Author author = authorManager.computeIfAbsent(book.getAuthorBean().getFirstName(),
+                    book.getAuthorBean().getLastName());
+            book.setAuthorBean(author);
+            bookDbManager.addBook(book);
+        } catch (Exception e) {
+            LOGGER.error("failed to add book to catalog", e);
+            return BookStatus.FAILURE;
         }
-
-        Author author = authorManager.computeIfAbsent(book.getAuthorBean().getFirstName(), book.getAuthorBean().getLastName());
-        book.setAuthorBean(author);
-
-        bookDbManager.addBook(book);
-
-        return true;
+        return BookStatus.SUCCESS;
     }
 
-    public boolean removeBook(@Positive int isbn) {
-        int numberOfEntiresRemoved = bookDbManager.removeBook(isbn);
+    public BookStatus removeBook(@Positive int isbn) {
+        int numberOfEntiresRemoved = 0;
+        try {
+        numberOfEntiresRemoved = bookDbManager.removeBook(isbn);
+        } catch(Exception e) {
+            LOGGER.error("failed to remove book from catalog", e);
+            return BookStatus.FAILURE;
+        }
 
-        return numberOfEntiresRemoved > 0;
+        return numberOfEntiresRemoved > 0 ? BookStatus.SUCCESS : BookStatus.DOES_NOT_EXIST;
     }
 
     public Set<Book> getBooksWithTitle(@NotEmpty String title) {

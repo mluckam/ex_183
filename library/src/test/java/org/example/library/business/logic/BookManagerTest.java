@@ -33,26 +33,26 @@ public class BookManagerTest {
     @Test
     void testAddBook() {
         Author author = new Author("John", "Smith");
-        Book book = new Book(1234, "The Newest Book", author, new Date()); 
+        Book book = new Book(1234, "The Newest Book", author, new Date());
 
         doReturn(false).when(bookDbManager).bookExists(book);
         doReturn(author).when(authorManager).computeIfAbsent(author.getFirstName(), author.getLastName());
 
-        boolean actualBookAdded = sut.addBook(book);
+        BookStatus actualBookStatus = sut.addBook(book);
 
-        assertEquals(true, actualBookAdded);
+        assertEquals(BookStatus.SUCCESS, actualBookStatus);
     }
 
     @Test
     void testAddBook_alreadyExists() {
         Author author = new Author("John", "Smith");
-        Book book = new Book(1234, "The Newest Book", author, new Date()); 
+        Book book = new Book(1234, "The Newest Book", author, new Date());
 
         doReturn(true).when(bookDbManager).bookExists(book);
-        
-        boolean actualBookAdded = sut.addBook(book);
 
-        assertEquals(false, actualBookAdded);
+        BookStatus actualBookStatus = sut.addBook(book);
+
+        assertEquals(BookStatus.ALREADY_ADDED, actualBookStatus);
     }
 
     @Test
@@ -60,9 +60,9 @@ public class BookManagerTest {
         int isbn = 1234;
         doReturn(1).when(bookDbManager).removeBook(isbn);
 
-        boolean actualBookRemoved = sut.removeBook(isbn);
+        BookStatus actualBookStatus = sut.removeBook(isbn);
 
-        assertEquals(true, actualBookRemoved);
+        assertEquals(BookStatus.SUCCESS, actualBookStatus);
     }
 
     @Test
@@ -70,9 +70,9 @@ public class BookManagerTest {
         int isbn = 1234;
         doReturn(0).when(bookDbManager).removeBook(isbn);
 
-        boolean actualBookRemoved = sut.removeBook(isbn);
+        BookStatus actualBookStatus = sut.removeBook(isbn);
 
-        assertEquals(false, actualBookRemoved);
+        assertEquals(BookStatus.DOES_NOT_EXIST, actualBookStatus);
     }
 
     @AfterEach

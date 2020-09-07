@@ -1,13 +1,19 @@
 package org.example.library.jpa;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.example.library.cdi.AuthorEntityManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.AuthorField;
+import org.example.library.jpa.model.Book;
 
 @Singleton
 public class AuthorDbManager {
@@ -48,5 +54,12 @@ public class AuthorDbManager {
         query.setParameter(AuthorField.LAST_NAME_JAVA_SYNTAX, lastName);
 
         return query.getResultList().size() > 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Set<Author> getAllAuthors() {
+        entityManager.createNamedQuery("Book.findAll", Book.class).getResultList();
+        Query query = entityManager.createNamedQuery("Author.findAll", Author.class);
+        return  (Set<Author>) query.getResultStream().collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

@@ -53,4 +53,8 @@ public class AuthorManager {
 
         return authorDbManager.readAuthor(firstName,lastName);
     }
+
+    public Set<Author> getAllAuthors() {
+        return authorDbManager.getAllAuthors();
+    }
 }
