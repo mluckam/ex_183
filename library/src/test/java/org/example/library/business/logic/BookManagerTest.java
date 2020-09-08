@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.Date;
 
+import org.example.library.jms.DestinationManager;
 import org.example.library.jpa.BookDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
@@ -20,6 +21,8 @@ public class BookManagerTest {
     private AuthorManager authorManager;
     @Mock
     private BookDbManager bookDbManager;
+    @Mock
+    private DestinationManager destinationManager;
     private AutoCloseable mockCloser;
 
     private BookManager sut;
@@ -27,7 +30,7 @@ public class BookManagerTest {
     @BeforeEach
     void setup() {
         mockCloser = MockitoAnnotations.openMocks(this);
-        sut = new BookManager(bookDbManager, authorManager);
+        sut = new BookManager(bookDbManager, authorManager, destinationManager);
     }
 
     @Test

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.example.library.jms.DestinationManager;
 import org.example.library.jpa.AuthorDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
@@ -25,6 +26,8 @@ public class AuthorManagerTest {
 
     @Mock
     private AuthorDbManager authorDbManager;
+    @Mock
+    private DestinationManager destinationManager;
     private AutoCloseable mockCloser;
 
     private AuthorManager sut;
@@ -32,7 +35,7 @@ public class AuthorManagerTest {
     @BeforeEach
     void setup() {
         mockCloser = MockitoAnnotations.openMocks(this);
-        sut = new AuthorManager(authorDbManager);
+        sut = new AuthorManager(authorDbManager, destinationManager);
     }
 
     @Test

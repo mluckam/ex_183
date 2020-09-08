@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotEmpty;
 
+import org.example.library.jms.DestinationManager;
 import org.example.library.jpa.AuthorDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
@@ -15,14 +16,16 @@ import org.example.library.jpa.model.Book;
 public class AuthorManager {
 
     private AuthorDbManager authorDbManager;
+    private DestinationManager destinationManager;
 
     public AuthorManager() {
     }
 
 
     @Inject
-    public AuthorManager(AuthorDbManager authorDbManager) {
+    public AuthorManager(AuthorDbManager authorDbManager, DestinationManager destinationManager) {
         this.authorDbManager = authorDbManager;
+        this.destinationManager = destinationManager;
     }
 
     public boolean addAuthor(@NotEmpty String firstName, @NotEmpty String lastName) {
@@ -32,6 +35,8 @@ public class AuthorManager {
         }
 
         authorDbManager.createAuthor(firstName, lastName);
+
+        destinationManager.sendToSuccessTopic(String.format("Author '%s %s' was added to the catalog.", firstName, lastName ));
 
         return true;
     }
@@ -47,9 +52,7 @@ public class AuthorManager {
 
     //TODO: there should be a way to do this with less db access
     public Author computeIfAbsent(@NotEmpty String firstName, @NotEmpty String lastName) {
-        if(!authorDbManager.authorExists(firstName, lastName)) {
-            authorDbManager.createAuthor(firstName, lastName);
-        }
+        this.addAuthor(firstName, lastName);
 
         return authorDbManager.readAuthor(firstName,lastName);
     }

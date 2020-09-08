@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 
+import org.example.library.jms.DestinationManager;
 import org.example.library.jpa.BookDbManager;
 import org.example.library.jpa.model.Author;
 import org.example.library.jpa.model.Book;
@@ -19,14 +20,16 @@ public class BookManager {
 
     private BookDbManager bookDbManager;
     private AuthorManager authorManager;
+    private DestinationManager destinationManager;
 
     public BookManager() {
     }
 
     @Inject
-    public BookManager(BookDbManager bookDbManager, AuthorManager authorManager) {
+    public BookManager(BookDbManager bookDbManager, AuthorManager authorManager, DestinationManager destinationManager) {
         this.bookDbManager = bookDbManager;
         this.authorManager = authorManager;
+        this.destinationManager = destinationManager;
     }
 
     public BookStatus addBook(Book book) {
@@ -43,6 +46,8 @@ public class BookManager {
             LOGGER.error("failed to add book to catalog", e);
             return BookStatus.FAILURE;
         }
+
+        destinationManager.sendToSuccessQueue(String.format("Book %s was added to the catalog.", book));
         return BookStatus.SUCCESS;
     }
 
